@@ -3,7 +3,11 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.dagger.hilt.android'
 }
+
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     namespace 'com.faraz.gitfinder'
@@ -63,8 +67,13 @@ dependencies {
     kapt libs.hilt.android.compiler
 
     // Jetpack libraries (if not already added)
-    implementation libs.androidx.hilt.lifecycle.viewmodel
     kapt libs.androidx.hilt.compiler
+    // Retrofit
+    implementation libs.retrofit
+    implementation libs.converter.gson // Gson converter
+
+    // Gson
+    implementation libs.gson // Gson library
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core

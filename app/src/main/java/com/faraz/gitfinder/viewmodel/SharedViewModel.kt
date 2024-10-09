@@ -17,11 +17,25 @@ class SharedViewModel @Inject constructor(private val repository: RemoteReposito
     private val _repositories = MutableStateFlow<List<GithubRepository>>(emptyList())
     val repositories: StateFlow<List<GithubRepository>> get() = _repositories
 
+    private val _selectedRepo = MutableStateFlow<GithubRepository?>(null)
+    val selectedRepo: StateFlow<GithubRepository?> get() = _selectedRepo
+
+    private val _repoURL = MutableStateFlow<String?>(null)
+    val repoURL: StateFlow<String?> get() = _repoURL
+
     fun searchRepositories(query: String) {
         viewModelScope.launch {
 //            Log.d("Response:", repository.searchRepositories(query).toString())
             val result = repository.searchRepositories(query)
-            _repositories.value = result.items
+            _repositories.value = result?.items ?: emptyList()
         }
+    }
+
+    fun setSelectedRepo(repository: GithubRepository) {
+        _selectedRepo.value = repository
+    }
+
+    fun setURLToLoad(htmlUrl: String) {
+        _repoURL.value = htmlUrl
     }
 }

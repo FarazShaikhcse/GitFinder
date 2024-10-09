@@ -7,8 +7,12 @@ import javax.inject.Inject
 class RemoteRepository @Inject constructor(private val apiService: GitHubApiService) {
 
     // Example method to search repositories
-    suspend fun searchRepositories(query: String): GithubAPIResponse {
+    suspend fun searchRepositories(query: String): GithubAPIResponse? {
         // Use apiService to make API calls
-        return apiService.searchRepositories(query)
+        return try {
+            apiService.searchRepositories(query)
+        } catch (ex: Exception) {
+            null
+        }
     }
 }

@@ -22,3 +22,12 @@ data class Owner(
     val html_url: String
 )
 
+//fun serializeRepository(repo: GithubRepository): String {
+//    return Gson().toJson(repo)
+//}
+//
+//fun parseRepository(repoString: String): GithubRepository? {
+//    return Gson().fromJson(repoString, GithubRepository::class.java)
+//}
+
+

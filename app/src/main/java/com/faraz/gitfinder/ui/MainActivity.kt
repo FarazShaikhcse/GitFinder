@@ -14,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.faraz.gitfinder.ui.home.HomeScreen
+import com.faraz.gitfinder.ui.repodetails.RepoDetailsScreen
+import com.faraz.gitfinder.ui.webview.WebViewScreen
 import com.faraz.gitfinder.viewmodel.SharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,15 +48,17 @@ fun GitFinderApp(viewModel: SharedViewModel) {
             ) {
                 // Home screen route
                 composable("home") {
-                    HomeScreen(viewModel = viewModel) {
+                    HomeScreen(viewModel = viewModel, navController = navController) {
                         viewModel.searchRepositories(it)
                     }
                 }
                 // Repo details screen route, pass the repository name as an argument
-//                composable("repoDetails/{repoName}") { backStackEntry ->
-//                    val repoName = backStackEntry.arguments?.getString("repoName")
-//                    RepoDetailsScreen(repoName = repoName ?: "")
-//                }
+                composable("repoDetails/") {
+                    RepoDetailsScreen(viewModel = viewModel, navController = navController)
+                }
+                composable("webView/") {
+                    WebViewScreen(viewModel = viewModel, navController = navController)
+                }
             }
         }
     }

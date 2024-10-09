@@ -4,12 +4,15 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'com.google.dagger.hilt.android'
+    id 'kotlin-parcelize'
 }
 
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
+    def githubToken = project.hasProperty('github.token') ? project.property('github.token') : ""
+
     namespace 'com.faraz.gitfinder'
     compileSdk 34
 
@@ -27,7 +30,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "GITHUB_TOKEN", "\"$githubToken\""
+        }
         release {
+            buildConfigField "String", "GITHUB_TOKEN", "\"$githubToken\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -41,6 +48,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.1'
@@ -66,8 +74,8 @@ dependencies {
     implementation libs.hilt.android
     implementation libs.androidx.navigation.compose
     kapt libs.hilt.android.compiler
-
-    // Jetpack libraries (if not already added)
+    implementation libs.coil // Add the Coil dependency
+    implementation libs.coil.compose
     kapt libs.androidx.hilt.compiler
     // Retrofit
     implementation libs.retrofit

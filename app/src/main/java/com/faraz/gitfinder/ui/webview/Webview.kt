@@ -15,7 +15,10 @@ import com.faraz.gitfinder.ui.common.TopBar
 import com.faraz.gitfinder.viewmodel.SharedViewModel
 
 @Composable
-fun WebViewScreen(viewModel: SharedViewModel, navController: NavHostController) {
+fun WebViewScreen(
+    viewModel: SharedViewModel,
+    navController: NavHostController,
+) {
     val url by viewModel.repoURL.collectAsState()
 
     val context = LocalContext.current
@@ -25,23 +28,25 @@ fun WebViewScreen(viewModel: SharedViewModel, navController: NavHostController) 
             TopBar(
                 title = "Webview",
                 showBackButton = true,
-                onNavigationClick = { navController.popBackStack() }
+                onNavigationClick = { navController.popBackStack() },
             )
         },
         content = { padding ->
-            AndroidView(factory = {
-                WebView(context).apply {
-                    webViewClient = WebViewClient()
-                    settings.javaScriptEnabled = true // Enable JS if necessary
-                    loadUrl(url ?: "")
-                }
-            }, update = { webView ->
-                // Update the URL if it changes
-                url?.let {
-                    webView.loadUrl(it)
-                }
-            },
-                modifier = Modifier.padding(padding)
+            AndroidView(
+                factory = {
+                    WebView(context).apply {
+                        webViewClient = WebViewClient()
+                        loadUrl(url ?: "")
+                    }
+                },
+                update = { webView ->
+                    // Update the URL if it changes
+                    url?.let {
+                        webView.loadUrl(it)
+                    }
+                },
+                modifier = Modifier.padding(padding),
             )
-        })
+        },
+    )
 }

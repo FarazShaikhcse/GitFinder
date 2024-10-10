@@ -9,7 +9,7 @@ data class GithubRepositoryEntity(
     @PrimaryKey val id: Long,
     val name: String,
     val fullName: String,
-    val owner: Owner?,  // Store Owner as a stringified JSON
+    val owner: Owner?,
     val description: String?,
     val htmlUrl: String,
     val stargazersCount: Int,
@@ -17,5 +17,5 @@ data class GithubRepositoryEntity(
     val language: String?,
     val createdAt: String,
     val updatedAt: String,
-    val topics: List<String>? // Using TypeConverter for List<String>
+    val topics: List<String>?,
 )

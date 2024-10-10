@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -24,6 +23,8 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +35,6 @@ import androidx.navigation.NavHostController
 import com.faraz.gitfinder.data.db.GithubRepositoryEntity
 import com.faraz.gitfinder.ui.common.TopBar
 import com.faraz.gitfinder.viewmodel.SharedViewModel
-
 
 @Composable
 fun HomeScreen(
@@ -48,7 +48,6 @@ fun HomeScreen(
     val errorMessage by viewModel.errorMessage.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-
     Scaffold(
         topBar = {
             TopBar(title = "GitHub Repositories", showBackButton = false)
@@ -57,42 +56,49 @@ fun HomeScreen(
             if (isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
                         color = Color.Blue,
                         strokeWidth = 4.dp,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(50.dp),
                     )
                 }
             } else {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(16.dp),
                 ) {
-
                     errorMessage?.let {
                         Text("Error: $it")
                     }
                     // Search Bar
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
-                        BasicTextField(
+                        TextField(
                             value = query,
                             onValueChange = {
                                 query = it
                                 onSearch(query) // Call the search function whenever the query changes
                             },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(8.dp)
-                                .border(1.dp, Color.Black)
-                                .padding(8.dp),
-                            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp)
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .padding(8.dp)
+                                    .border(1.dp, Color.Black)
+                                    .padding(8.dp),
+                            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                            placeholder = { Text("Search Repository...") },
+                            colors =
+                                TextFieldDefaults.colors(
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent,
+                                ),
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
@@ -102,10 +108,11 @@ fun HomeScreen(
 
                     // Repository List
                     LazyColumn {
-
                         itemsIndexed(repositories) { index, repository ->
                             RepositoryItem(
-                                repository, navController, viewModel
+                                repository,
+                                navController,
+                                viewModel,
                             )
 
                             // Load the next page when the user scrolls to the end
@@ -116,35 +123,37 @@ fun HomeScreen(
                     }
                 }
             }
-        })
+        },
+    )
 }
 
 @Composable
 fun RepositoryItem(
     repository: GithubRepositoryEntity,
     navController: NavHostController,
-    viewModel: SharedViewModel
+    viewModel: SharedViewModel,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable {
-                viewModel.setSelectedRepo(repository)
-                navController.navigate("repoDetails/")
-            },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .clickable {
+                    viewModel.setSelectedRepo(repository)
+                    navController.navigate("repoDetails/")
+                },
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = repository.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = repository.description ?: "No description available",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Stars: ${repository.stargazersCount}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
     }

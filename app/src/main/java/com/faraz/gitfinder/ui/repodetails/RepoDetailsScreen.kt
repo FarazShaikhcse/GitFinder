@@ -2,8 +2,15 @@ package com.faraz.gitfinder.ui.repodetails
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -17,8 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.faraz.gitfinder.ui.common.TopBar
+import com.faraz.gitfinder.util.Routes
 import com.faraz.gitfinder.viewmodel.SharedViewModel
 
 @Composable
@@ -51,7 +59,7 @@ fun RepoDetailsScreen(
                 ) {
                     // Display repository image
                     Image(
-                        painter = rememberImagePainter(repo.owner?.avatar_url ?: ""),
+                        painter = rememberAsyncImagePainter(repo.owner?.avatar_url ?: ""),
                         contentDescription = "Owner Avatar",
                         modifier =
                             Modifier
@@ -84,7 +92,7 @@ fun RepoDetailsScreen(
                                 .clickable {
                                     viewModel.setURLToLoad(repo.htmlUrl)
                                     navController.navigate(
-                                        "webView/",
+                                        Routes.ROUTE_WEBVIEW,
                                     )
                                 }, // Function to open web view
                     )
@@ -106,7 +114,7 @@ fun RepoDetailsScreen(
                         fontWeight = FontWeight.Bold,
                     )
 
-                    ContributorsScreen(viewModel = viewModel)
+                    ContributorsScreen(viewModel = viewModel, navController)
                 }
             },
         )

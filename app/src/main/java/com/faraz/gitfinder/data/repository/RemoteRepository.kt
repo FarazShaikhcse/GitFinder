@@ -5,6 +5,7 @@ import com.faraz.gitfinder.data.db.GithubRepositoryEntity
 import com.faraz.gitfinder.data.db.RepositoryDao
 import com.faraz.gitfinder.data.model.Contributor
 import com.faraz.gitfinder.data.model.GithubAPIResponse
+import com.faraz.gitfinder.data.model.GithubRepository
 import com.faraz.gitfinder.data.model.Resource
 import com.faraz.gitfinder.data.model.toEntity
 import kotlinx.coroutines.flow.Flow
@@ -58,4 +59,6 @@ class RemoteRepository
             owner: String,
             repo: String,
         ): List<Contributor> = apiService.getContributors(owner, repo)
+
+        suspend fun fetchContributorRepositories(username: String): List<GithubRepository> = apiService.getUserRepositories(username)
     }

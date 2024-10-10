@@ -22,7 +22,7 @@ fun WebViewScreen(
     val url by viewModel.repoURL.collectAsState()
 
     val context = LocalContext.current
-    // Use AndroidView to display a WebView within Compose
+
     Scaffold(
         topBar = {
             TopBar(
@@ -32,6 +32,7 @@ fun WebViewScreen(
             )
         },
         content = { padding ->
+            // Use AndroidView to display a WebView within Compose
             AndroidView(
                 factory = {
                     WebView(context).apply {

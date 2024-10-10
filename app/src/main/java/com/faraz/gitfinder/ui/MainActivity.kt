@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.faraz.gitfinder.ui.contributordetails.ContributorReposScreen
 import com.faraz.gitfinder.ui.home.HomeScreen
 import com.faraz.gitfinder.ui.repodetails.RepoDetailsScreen
 import com.faraz.gitfinder.ui.webview.WebViewScreen
+import com.faraz.gitfinder.util.Routes
 import com.faraz.gitfinder.viewmodel.SharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,20 +46,24 @@ fun GitFinderApp(viewModel: SharedViewModel) {
             // Set up the NavHost with navigation routes
             NavHost(
                 navController = navController,
-                startDestination = "home", // Set home screen as the start destination
+                startDestination = Routes.ROUTE_HOME, // Set home screen as the start destination
             ) {
                 // Home screen route
-                composable("home") {
+                composable(Routes.ROUTE_HOME) {
                     HomeScreen(viewModel = viewModel, navController = navController) {
                         viewModel.onSearchQueryChanged(it)
                     }
                 }
-                // Repo details screen route, pass the repository name as an argument
-                composable("repoDetails/") {
+                // Repo details screen route
+                composable(Routes.ROUTE_REPO_DETAILS) {
                     RepoDetailsScreen(viewModel = viewModel, navController = navController)
                 }
-                composable("webView/") {
+                composable(Routes.ROUTE_WEBVIEW) {
                     WebViewScreen(viewModel = viewModel, navController = navController)
+                }
+                // contributor details screen
+                composable(Routes.ROUTE_CONTRIBUTOR) {
+                    ContributorReposScreen(viewModel = viewModel, navController = navController)
                 }
             }
         }

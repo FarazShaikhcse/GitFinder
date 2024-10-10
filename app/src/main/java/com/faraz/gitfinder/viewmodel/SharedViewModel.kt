@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.faraz.gitfinder.data.db.GithubRepositoryEntity
 import com.faraz.gitfinder.data.model.Contributor
+import com.faraz.gitfinder.data.model.GithubRepository
 import com.faraz.gitfinder.data.model.Resource
 import com.faraz.gitfinder.data.repository.RemoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +42,9 @@ class SharedViewModel
         private val _isLoading = MutableStateFlow(false)
         val isLoading: StateFlow<Boolean> get() = _isLoading
 
+        private val _contributorRepos = MutableStateFlow<List<GithubRepository>>(emptyList())
+        val contributorRepos: StateFlow<List<GithubRepository>> = _contributorRepos
+
         private val searchQuery = MutableStateFlow("")
 
         private var currentPage = 1
@@ -75,13 +79,16 @@ class SharedViewModel
                             newList.addAll(result.data ?: emptyList())
                             _repositories.value = newList
                         }
+
                         is Resource.Error -> {
                             _isLoading.value = false
                             _errorMessage.value = result.message
                             delay(3000)
                             // remove error message after 3 seconds
                             _errorMessage.value = null
+                            loadSavedRepos()
                         }
+
                         is Resource.Loading -> {
                             _isLoading.value = true
                         }
@@ -123,8 +130,19 @@ class SharedViewModel
                     val contributorsList = repository.getContributors(owner, repo)
                     _contributors.value = contributorsList
                 } catch (e: Exception) {
-                    // Handle the error
                     _contributors.value = emptyList()
+                }
+            }
+        }
+
+        fun fetchContributorRepositories(username: String) {
+            viewModelScope.launch {
+                _contributorRepos.value = emptyList()
+                try {
+                    val repos = repository.fetchContributorRepositories(username)
+                    _contributorRepos.value = repos
+                } catch (e: Exception) {
+                    // do nothing
                 }
             }
         }

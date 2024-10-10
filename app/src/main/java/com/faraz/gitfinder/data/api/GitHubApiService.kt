@@ -30,7 +30,7 @@ interface GitHubApiService {
         @Path("repo") repo: String,
     ): List<Contributor>
 
-    // Get repositories for a specific contributor
+    // Get repositories of a specific contributor
     @GET("users/{username}/repos")
     suspend fun getUserRepositories(
         @Path("username") username: String,

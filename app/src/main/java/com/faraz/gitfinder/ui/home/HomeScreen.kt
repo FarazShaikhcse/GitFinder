@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.faraz.gitfinder.data.model.GithubRepository
+import com.faraz.gitfinder.data.db.GithubRepositoryEntity
 import com.faraz.gitfinder.ui.common.TopBar
 import com.faraz.gitfinder.viewmodel.SharedViewModel
 
@@ -42,6 +42,7 @@ fun HomeScreen(
     var query by remember { mutableStateOf("") }
 
     val repositories by viewModel.repositories.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Scaffold(
         topBar = {
@@ -54,6 +55,10 @@ fun HomeScreen(
                     .padding(padding)
                     .padding(16.dp)
             ) {
+
+                errorMessage?.let {
+                    Text("Error: $it")
+                }
                 // Search Bar
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -80,8 +85,19 @@ fun HomeScreen(
 
                 // Repository List
                 LazyColumn {
-                    items(repositories) { repository ->
-                        RepositoryItem(repository, navController, viewModel)
+//                    items(repositories) { repository ->
+//                        RepositoryItem(repository, navController, viewModel)
+
+                    itemsIndexed(repositories) { index, repository ->
+                        RepositoryItem(
+                            repository, navController, viewModel
+                        )
+
+
+                        // Load the next page when the user scrolls to the end
+                        if (index == repositories.size - 1) {
+                            viewModel.loadNextPage(query)
+                        }
                     }
                 }
             }
@@ -90,7 +106,7 @@ fun HomeScreen(
 
 @Composable
 fun RepositoryItem(
-    repository: GithubRepository,
+    repository: GithubRepositoryEntity,
     navController: NavHostController,
     viewModel: SharedViewModel
 ) {
@@ -99,7 +115,7 @@ fun RepositoryItem(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable {
-                viewModel.setSelectedRepo (repository)
+                viewModel.setSelectedRepo(repository)
                 navController.navigate("repoDetails/")
             },
     ) {
@@ -112,7 +128,7 @@ fun RepositoryItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Stars: ${repository.stargazers_count}",
+                text = "Stars: ${repository.stargazersCount}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

@@ -1,6 +1,7 @@
 package com.faraz.gitfinder.di
 
 import com.faraz.gitfinder.data.api.GitHubApiService
+import com.faraz.gitfinder.util.AppConstants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,7 +10,6 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.Properties
 import javax.inject.Singleton
 
 @Module
@@ -19,24 +19,24 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
-        val token = "token"
         val authInterceptor = Interceptor { chain ->
             val request = chain.request().newBuilder()
-                .addHeader("Authorization", "Bearer $token") // Add token to header
+                .addHeader("Authorization", "Bearer ${AppConstants.API_KEY}")
                 .build()
             chain.proceed(request)
         }
 
         return OkHttpClient.Builder()
-            .addInterceptor(authInterceptor) // Add the interceptor to the client
+            .addInterceptor(authInterceptor)
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit {
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.github.com/")
+            .baseUrl(AppConstants.BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

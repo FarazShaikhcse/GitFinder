@@ -81,6 +81,10 @@ dependencies {
     implementation libs.retrofit
     implementation libs.converter.gson // Gson converter
 
+    implementation libs.androidx.room.runtime
+    kapt libs.androidx.room.compiler
+    implementation libs.androidx.room.ktx
+
     // Gson
     implementation libs.gson // Gson library
     testImplementation libs.junit

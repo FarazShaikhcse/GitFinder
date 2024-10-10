@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.searchRepositories("kotlin")
+        viewModel.loadSavedRepos()
         enableEdgeToEdge()
         setContent {
             GitFinderApp(viewModel)
@@ -49,7 +49,7 @@ fun GitFinderApp(viewModel: SharedViewModel) {
                 // Home screen route
                 composable("home") {
                     HomeScreen(viewModel = viewModel, navController = navController) {
-                        viewModel.searchRepositories(it)
+                        viewModel.onSearchQueryChanged(it)
                     }
                 }
                 // Repo details screen route, pass the repository name as an argument

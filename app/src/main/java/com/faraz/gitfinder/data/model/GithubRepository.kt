@@ -1,5 +1,7 @@
 package com.faraz.gitfinder.data.model
 
+import com.faraz.gitfinder.data.db.GithubRepositoryEntity
+
 data class GithubRepository(
 val id: Long,
 val name: String,
@@ -30,4 +32,19 @@ data class Owner(
 //    return Gson().fromJson(repoString, GithubRepository::class.java)
 //}
 
-
+fun GithubRepository.toEntity(): GithubRepositoryEntity {
+    return GithubRepositoryEntity(
+        id = this.id,
+        name = this.name,
+        fullName = this.full_name,
+        owner = this.owner, // Store the Owner object directly using TypeConverter
+        description = this.description,
+        htmlUrl = this.html_url,
+        stargazersCount = this.stargazers_count,
+        forksCount = this.forks_count,
+        language = this.language,
+        createdAt = this.created_at,
+        updatedAt = this.updated_at,
+        topics = this.topics
+    )
+}

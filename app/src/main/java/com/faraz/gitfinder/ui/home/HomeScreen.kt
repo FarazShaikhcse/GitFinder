@@ -2,6 +2,7 @@ package com.faraz.gitfinder.ui.home
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -16,6 +18,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +38,7 @@ import com.faraz.gitfinder.viewmodel.SharedViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: SharedViewModel, // List of repositories from ViewModel
+    viewModel: SharedViewModel,
     navController: NavHostController,
     onSearch: (String) -> Unit, // Callback to handle search
 ) {
@@ -43,60 +46,72 @@ fun HomeScreen(
 
     val repositories by viewModel.repositories.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
 
     Scaffold(
         topBar = {
             TopBar(title = "GitHub Repositories", showBackButton = false)
         },
         content = { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(16.dp)
-            ) {
-
-                errorMessage?.let {
-                    Text("Error: $it")
-                }
-                // Search Bar
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    BasicTextField(
-                        value = query,
-                        onValueChange = {
-                            query = it
-                            onSearch(query) // Call the search function whenever the query changes
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(8.dp)
-                            .border(1.dp, Color.Black)
-                            .padding(8.dp),
-                        textStyle = LocalTextStyle.current.copy(fontSize = 18.sp)
+                    CircularProgressIndicator(
+                        color = Color.Blue,
+                        strokeWidth = 4.dp,
+                        modifier = Modifier.size(50.dp)
                     )
                 }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(16.dp)
+                ) {
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Repository List
-                LazyColumn {
-//                    items(repositories) { repository ->
-//                        RepositoryItem(repository, navController, viewModel)
-
-                    itemsIndexed(repositories) { index, repository ->
-                        RepositoryItem(
-                            repository, navController, viewModel
+                    errorMessage?.let {
+                        Text("Error: $it")
+                    }
+                    // Search Bar
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        BasicTextField(
+                            value = query,
+                            onValueChange = {
+                                query = it
+                                onSearch(query) // Call the search function whenever the query changes
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp)
+                                .border(1.dp, Color.Black)
+                                .padding(8.dp),
+                            textStyle = LocalTextStyle.current.copy(fontSize = 18.sp)
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
+                    }
 
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        // Load the next page when the user scrolls to the end
-                        if (index == repositories.size - 1) {
-                            viewModel.loadNextPage(query)
+                    // Repository List
+                    LazyColumn {
+
+                        itemsIndexed(repositories) { index, repository ->
+                            RepositoryItem(
+                                repository, navController, viewModel
+                            )
+
+                            // Load the next page when the user scrolls to the end
+                            if (index == repositories.size - 1) {
+                                viewModel.loadNextPage(query)
+                            }
                         }
                     }
                 }

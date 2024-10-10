@@ -36,6 +36,9 @@ class SharedViewModel @Inject constructor(private val repository: RemoteReposito
     private val _contributors = MutableStateFlow<List<Contributor>>(emptyList())
     val contributors: StateFlow<List<Contributor>> = _contributors
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> get() = _isLoading
+
     private val searchQuery = MutableStateFlow("")
 
     private var currentPage = 1
@@ -65,15 +68,17 @@ class SharedViewModel @Inject constructor(private val repository: RemoteReposito
             repository.getRepositories(query, currentPage, pageSize).collect { result ->
                 when (result) {
                     is Resource.Success -> {
+                        _isLoading.value = false
                         val newList = _repositories.value.toMutableList()
                         newList.addAll(result.data ?: emptyList())
                         _repositories.value = newList
                     }
                     is Resource.Error -> {
+                        _isLoading.value = false
                         _errorMessage.value = result.message
                     }
                     is Resource.Loading -> {
-                        // Show loading state
+                        _isLoading.value = true
                     }
                 }
             }
@@ -81,11 +86,13 @@ class SharedViewModel @Inject constructor(private val repository: RemoteReposito
     }
 
     fun loadNextPage(query: String) {
-        currentPage += 1
-        if (currentPage == 2) {
-            pageSize = 10
+        if (query.isNotBlank()) {
+            currentPage += 1
+            if (currentPage == 2) {
+                pageSize = 10
+            }
+            loadRepositories(query)
         }
-        loadRepositories(query)
     }
 
     fun setSelectedRepo(repository: GithubRepositoryEntity) {

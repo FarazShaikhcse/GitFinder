@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import com.faraz.gitfinder.data.model.Resource
 import com.faraz.gitfinder.data.model.toEntity
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 
 class RemoteRepository @Inject constructor(
@@ -44,7 +45,6 @@ class RemoteRepository @Inject constructor(
                 repositoryDao.clearRepositories() // Clear existing entries
                 repositoryDao.insertRepositories(repositoryEntities.take(15))
             }
-
             emit(Resource.Success(repositoryEntities))
 
         } catch (e: Exception) {
